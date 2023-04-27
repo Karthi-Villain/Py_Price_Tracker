@@ -2,7 +2,6 @@ import cloudscraper
 from bs4 import BeautifulSoup
 import streamlit as st
 import json, math, csv
-from datetime import date
 
 st.set_page_config(page_title="Price Tracker",layout="centered")
 st.header("Price Tracker")
