@@ -2,6 +2,7 @@ import cloudscraper
 from bs4 import BeautifulSoup
 import streamlit as st
 import json, math, csv
+import pandas as pd
 
 st.set_page_config(page_title="Price Tracker",layout="centered")
 st.header("Price Tracker")
@@ -17,8 +18,20 @@ hide_streamlit_style = """
             </style>
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+def Show_Graph(Product_ID):
+    try:
+        FileDir=f"./Details/{Product_ID}.csv"
+        df = pd.read_csv(FileDir, parse_dates=['date'],dayfirst=True)
+        with open(FileDir,'r')as f:
+            GraphTitle=f'Price From {len(f.readlines())-1} Days'
+        st.subheader(GraphTitle)
+        st.line_chart(df.set_index('date'))
+        st.set_option('deprecation.showPyplotGlobalUse', False)
+    except Exception as e:
+        print(str(e))
 
-def Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Reviews,Off_Percentage,Product_Image):
+
+def Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Reviews,Off_Percentage,Product_Image,Product_ID):
     col1,col2=st.columns(2)
     with col1:
         with st.container():
@@ -33,6 +46,8 @@ def Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Rev
 <h2><span style="font-family:Georgia,serif"><span style="font-size:14px"><strong><span style="color:#f1c40f">Actual Price:</span></strong> </span><span style="font-size:20px">{Actual_Price}</span></span></h2>''',unsafe_allow_html=True)
             st.write(Delivary_Details)
     st.markdown("""<p style="text-align:center"><strong>Made With&nbsp;❤️</strong></p>""",unsafe_allow_html=True)
+    Show_Graph(Product_ID)
+
 def Get_Last_Day_Price(FileName):
     try:
         with open(FileName,'r') as Data:
@@ -110,7 +125,7 @@ def Do_Scrape(URL):
         Product_ID=Get_Product_ID(req.url)
         Progress.progress(100)
 
-        Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Reviews,Off_Percentage,Product_Image)
+        Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Reviews,Off_Percentage,Product_Image,Product_ID)
         Save_Details(Current_Price,Product_ID)
 
 if URL:

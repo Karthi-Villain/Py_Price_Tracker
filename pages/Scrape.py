@@ -24,7 +24,12 @@ def Save_Details(Current_Price):
                 if Current_Price<=int(str(rows[-1])[11:]):
                     with open(File_Dir,'w',newline="",encoding="utf-8") as temp:
                         temp.writelines(rows[:-1]) 
-    except:  
+    except:
+        isExist = os.path.exists(File_Dir)
+        if not isExist:
+            with open(File_Dir,"a",newline='',encoding="utf-8") as ID_File2:
+                write=csv.writer(ID_File2,delimiter=",")
+                write.writerow(["date","prices"])
         with open(File_Dir,"a",newline='',encoding="utf-8") as ID_File2:
             write=csv.writer(ID_File2,delimiter=",")
             write.writerow([date.today().strftime("%d/%m/%Y"),int(Current_Price)])
