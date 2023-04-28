@@ -11,28 +11,35 @@ def Amazon_Link(bsoup):
         Current_Price=int(Current_Price[1:-3].replace(',',''))
     else:
         Current_Price=0
+
+def Flipkart_Link(bsoup):
+    global Current_Price
+    Current_Price=int(bsoup.find("div",class_="_30jeq3 _16Jk6d").text[1:].replace(',','').replace('.00',''))
     
 def Save_Details(Current_Price):
     DuplicateDate=False
     File_Name=Product_ID+".csv"
     File_Dir=os.path.join(os.path.split(os.path.dirname(__file__))[0], "Details", File_Name)
     #Check For Date
-    try:
-        with open(File_Dir,"r",newline='',encoding="utf-8") as ID_File:
-            rows=ID_File.readlines()
-            if str(date.today().strftime("%d/%m/%Y")) in str(rows[-1]) and Current_Price != int(str(rows[-1])[11:]):
-                if Current_Price<=int(str(rows[-1])[11:]):
-                    with open(File_Dir,'w',newline="",encoding="utf-8") as temp:
-                        temp.writelines(rows[:-1]) 
-    except:
-        isExist = os.path.exists(File_Dir)
-        if not isExist:
+    isExist = os.path.exists(File_Dir)
+    if not isExist:
             with open(File_Dir,"a",newline='',encoding="utf-8") as ID_File2:
                 write=csv.writer(ID_File2,delimiter=",")
                 write.writerow(["date","prices"])
-        with open(File_Dir,"a",newline='',encoding="utf-8") as ID_File2:
-            write=csv.writer(ID_File2,delimiter=",")
-            write.writerow([date.today().strftime("%d/%m/%Y"),int(Current_Price)])
+    with open(File_Dir,"r",newline='',encoding="utf-8") as ID_File:
+        rows=ID_File.readlines()
+        if len(rows)>=2 and str(date.today().strftime("%d/%m/%Y")) in str(rows[-1]) and Current_Price <= int(str(rows[-1])[11:]) :
+                with open(File_Dir,'w',newline="",encoding="utf-8") as temp:
+                    temp.writelines(rows[:-1])
+                with open(File_Dir,"a",newline='',encoding="utf-8") as ID_File2:
+                    write=csv.writer(ID_File2,delimiter=",")
+                    write.writerow([date.today().strftime("%d/%m/%Y"),int(Current_Price)])
+        elif len(rows)>=2 and Current_Price > int(str(rows[-1])[11:]):
+            pass
+        else:
+            with open(File_Dir,"a",newline='',encoding="utf-8") as ID_File2:
+                write=csv.writer(ID_File2,delimiter=",")
+                write.writerow([date.today().strftime("%d/%m/%Y"),int(Current_Price)])
     
 def Scraper_Fun(URL):
     scraper=cloudscraper.create_scraper()
@@ -44,6 +51,8 @@ def Scraper_Fun(URL):
     else:
         if("amazon" in req.url):
             Amazon_Link(bsoup)
+        elif "flipkart" in req.url:
+            Flipkart_Link(bsoup)
 
 with open(os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Scraper_List.csv'),"r") as SL:
     Details=csv.reader(SL)

@@ -59,7 +59,7 @@ def Get_Last_Day_Price(FileName):
     
     
 def Save_Details(Current_Price,Product_ID):
-    Target_Price=st.slider("Enter Your Target Price: ",max_value=int(Current_Price[1:-3].replace(',','')),min_value=0,value=int(Current_Price[1:-3].replace(',',''))-1)
+    Target_Price=st.slider("Enter Your Target Price: ",max_value=int(Current_Price[1:].replace(',','').replace('.00','')),min_value=0,value=int(Current_Price[1:].replace(',','').replace('.00',''))-1)
     coll1,coll2=st.columns([4,1])
     with coll1:
         Email=st.text_input("Enter Email Address:")
@@ -86,11 +86,15 @@ def Save_Details(Current_Price,Product_ID):
         
 
 def Get_Product_ID(FUrl):
-    if ('amzn' in str(URL) or 'amazon' in str(URL)):
+    if ('amzn' in str(FUrl) or 'amazon' in str(FUrl)):
         if('amzn' in str(URL)):
-            return FUrl[URL.find("dp/")+3:URL.find("dp/")+13]
+            return FUrl[FUrl.find("dp/")+3:FUrl.find("dp/")+13]
         else:
-            return FUrl[URL.find("dp/")+3:URL.find("dp/")+13]
+            return FUrl[FUrl.find("dp/")+3:FUrl.find("dp/")+13]
+    elif "flipkart" in FUrl:
+        print(FUrl[FUrl.index("/itm")+1:FUrl.index("/itm")+17])
+        return FUrl[FUrl.index("/itm")+1:FUrl.index("/itm")+17]
+
     
 def Do_Scrape(URL):
     Progress=st.progress(15)
@@ -106,7 +110,7 @@ def Do_Scrape(URL):
         st.warning("Failed to Scrape Your Product\nCheck the Given Link.")
 
     bsoup = BeautifulSoup(req.text,"html.parser")
-    if('amzn' in str(URL) or 'amazon' in str(URL)):
+    if('amzn' in req.url or 'amazon' in req.url):
         Progress.progress(80)
         Product_Name=bsoup.find("span",id="productTitle").text.strip()
         if "In stock" in bsoup.find('div',id="availability").text:
@@ -122,11 +126,36 @@ def Do_Scrape(URL):
         Reviews=bsoup.find("a",class_="a-popover-trigger a-declarative").text.strip()
         Product_Images=json.loads(bsoup.find('div',id="imgTagWrapperId").img['data-a-dynamic-image'])
         Product_Image=list(Product_Images.keys())[list(Product_Images.values()).index(max(Product_Images.values()))]
-        Product_ID=Get_Product_ID(req.url)
+        Product_ID=Get_Product_ID(URL)
         Progress.progress(100)
 
         Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Reviews,Off_Percentage,Product_Image,Product_ID)
         Save_Details(Current_Price,Product_ID)
+    elif "flipkart" in str(req.url):
+        Progress.progress(80)
+        Product_Name=bsoup.find("h1",class_="yhB1nd").text
+        if not "None" == bsoup.find("div",class_="_16FRp0") or "None" == bsoup.find("div",class_="_1dVbu9"):
+            Delivary_Details=bsoup.find("div",class_="_3XINqE").text[:-4]
+        else:
+            Current_Price=0
+            Actual_Price=0
+            Off_Percentage=0
+            Delivary_Details="Currently Unavailable!"
+        Current_Price=bsoup.find("div",class_="_30jeq3 _16Jk6d").text
+        Actual_Price=bsoup.find("div",class_="_3I9_wc _2p6lqe").text
+        Off_Percentage=bsoup.find("div",class_="_3Ay6Sb _31Dcoz").text[:-5]
+        Reviews=bsoup.find("div",class_="_3LWZlK").text+" "+bsoup.find("span",class_="_2_R_DZ").text   
+        Product_ID=Get_Product_ID(req.url)
+        print(Product_ID)
+        Product_Image=bsoup.find("img",class_="_396cs4 _2amPTt _3qGmMb").attrs["src"]
+        Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Reviews,Off_Percentage,Product_Image,Product_ID)
+        Save_Details(Current_Price,Product_ID)
+    else:
+        st.write("Site not Supported Yet")
+
+
+            
+
 
 if URL:
     Do_Scrape(URL)
