@@ -40,7 +40,7 @@ def Save_Details(Current_Price):
             with open(File_Dir,"a",newline='',encoding="utf-8") as ID_File2:
                 write=csv.writer(ID_File2,delimiter=",")
                 write.writerow([date.today().strftime("%d/%m/%Y"),int(Current_Price)])
-    
+    print('Saved Prices of ',File_Name)
 def Scraper_Fun(URL):
     scraper=cloudscraper.create_scraper()
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}

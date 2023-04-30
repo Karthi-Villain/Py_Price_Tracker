@@ -1,8 +1,7 @@
 from mediafire import MediaFireApi
 from mediafire import MediaFireUploader
 from datetime import date
-import zipfile
-import os
+import zipfile, os
 import streamlit as st
 
 def zipdir(path, ziph):
