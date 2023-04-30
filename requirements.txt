@@ -3,3 +3,4 @@ cloudscraper
 BeautifulSoup4
 datetime
 pandas
+mediafire
