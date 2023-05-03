@@ -44,7 +44,7 @@ def SendMails(Product_Name,Product_Image,Current_Price,Target_Mail):
 
 def Amazon_Link(bsoup):
     global Current_Price ,Product_Name, Product_Image
-    if "In stock" in bsoup.find('div',id="availability").text:
+    if not None == bsoup.find('div',id="availability").text:
         Current_Price=bsoup.find_all('span',class_="a-offscreen")[0].text
         Current_Price=int(Current_Price[1:-3].replace(',',''))
     else:
