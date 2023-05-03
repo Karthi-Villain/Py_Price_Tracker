@@ -121,14 +121,12 @@ def Do_Scrape(URL):
             Current_Price=0
             Actual_Price=0
             Off_Percentage=0
-
         Delivary_Details=bsoup.find('div',id="mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_LARGE").text.strip()
         Reviews=bsoup.find("a",class_="a-popover-trigger a-declarative").text.strip()
         Product_Images=json.loads(bsoup.find('div',id="imgTagWrapperId").img['data-a-dynamic-image'])
         Product_Image=list(Product_Images.keys())[list(Product_Images.values()).index(max(Product_Images.values()))]
-        Product_ID=Get_Product_ID(URL)
+        Product_ID=Get_Product_ID(req.url)
         Progress.progress(100)
-
         Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Reviews,Off_Percentage,Product_Image,Product_ID)
         Save_Details(Current_Price,Product_ID)
     elif "flipkart" in str(req.url):
@@ -146,16 +144,12 @@ def Do_Scrape(URL):
         Off_Percentage=bsoup.find("div",class_="_3Ay6Sb _31Dcoz").text[:-5]
         Reviews=bsoup.find("div",class_="_3LWZlK").text+" "+bsoup.find("span",class_="_2_R_DZ").text   
         Product_ID=Get_Product_ID(req.url)
-        print(Product_ID)
         Product_Image=bsoup.find("img",class_="_396cs4 _2amPTt _3qGmMb").attrs["src"]
+        Progress.progress(100)
         Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Reviews,Off_Percentage,Product_Image,Product_ID)
         Save_Details(Current_Price,Product_ID)
     else:
         st.write("Site not Supported Yet")
-
-
-            
-
 
 if URL:
     Do_Scrape(URL)
