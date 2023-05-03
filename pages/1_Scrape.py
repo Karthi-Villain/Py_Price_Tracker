@@ -120,7 +120,7 @@ with open(os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Scraper_Lis
             Product[1]=Current_Price
         ReWrite.append([Product_ID,Product[1],Target_Price,Target_Mail,URL])
         Save_Details(Current_Price)
-        time.sleep(random.randint(7,10))
+        time.sleep(random.randint(10,15))
 with open('Scraper_List.csv',"w",newline="") as File_Mod:
     writer=csv.writer(File_Mod)
     writer.writerow(["Product_ID","Last_Price","Target_Price","Email","Url"])
