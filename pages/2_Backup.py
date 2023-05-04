@@ -4,14 +4,14 @@ from datetime import date
 import zipfile, os
 import streamlit as st
 
+FileName=str(date.today().strftime("%d/%m/%Y")).replace('/','_')+'_Bac.zip'
+
 def zipdir(path, ziph):
-    # ziph is zipfile handle
     print(path)
     for root, dirs, files in os.walk(path):
         for file in files:
             ziph.write(os.path.join(root, file))
             print(os.path.join(root, file))
-
 directory=os.path.join(os.getcwd(),'Details')
 zipf = zipfile.ZipFile('Backup.zip', 'w', zipfile.ZIP_DEFLATED)
 zipdir(directory, zipf)
@@ -29,10 +29,12 @@ session = api.user_get_session_token(
 api.session = session
 response = api.user_get_info()
 fd = open(os.path.join(os.getcwd(),'Backup.zip'), 'rb')
-FileName=str(date.today().strftime("%d/%m/%Y")).replace('/','_')+'_Bac.zip'
 result = uploader.upload(fd, FileName,
                          folder_key='fufvr27uasdbn')
-
 print(result)
-ArchiveData=open("./Backup.zip","rb")
-st.download_button("Download Data",data=ArchiveData,file_name=FileName)
+
+#Authentication for Scraped Data
+Auth=st.text_input("Enter Auth Code:")
+if Auth==str(os.getenv('Auth_Code')):
+    ArchiveData=open("./Backup.zip","rb")
+    st.download_button("Download Data",data=ArchiveData,file_name=FileName)
