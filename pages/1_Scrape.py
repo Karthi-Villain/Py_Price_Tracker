@@ -132,14 +132,23 @@ with open(os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Scraper_Lis
             Product[1]=int(Current_Price)
         ReWrite.append([Product_ID,Current_Price,Target_Price,Target_Mail,URL])
         Save_Details(Current_Price)
+<<<<<<< HEAD
         t=random.randint(7,10)
         print('Waiting ',t,' Seconds')
         time.sleep(t)
 
 #ReWriting all the Latest Data
 with open(os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Scraper_List.csv'),"w",newline="") as File_Mod:
+=======
+        time.sleep(random.randint(10,15))
+with open('Scraper_List.csv',"w",newline="") as File_Mod:
+>>>>>>> a70c3e4cc664266cce366819e0ba26f7d6278a7c
     writer=csv.writer(File_Mod)
     writer.writerow(["Product_ID","Last_Price","Target_Price","Email","Url"])
     for ReWriteRows in ReWrite:
         writer.writerow([ReWriteRows[0],int(ReWriteRows[1]),int(ReWriteRows[2]),ReWriteRows[3],ReWriteRows[4]])
+<<<<<<< HEAD
     print("CSV: Latest Price Updated in CSV")
+=======
+    print("Latest Price Updated in CSV")
+>>>>>>> a70c3e4cc664266cce366819e0ba26f7d6278a7c
