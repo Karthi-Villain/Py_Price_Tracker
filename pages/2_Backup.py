@@ -18,20 +18,24 @@ zipdir(directory, zipf)
 zipf.write(os.path.join(os.getcwd(),'Scraper_List.csv'))
 print(os.getcwd(),"\Scraper_List.csv")
 zipf.close()
+try:
+    api = MediaFireApi()
+    uploader = MediaFireUploader(api)
+    session = api.user_get_session_token(
+        email=os.getenv("Mediafire_Mail"),
+        password=os.getenv("Mediafire_Pass"),
+        app_id='42511')
 
-api = MediaFireApi()
-uploader = MediaFireUploader(api)
-session = api.user_get_session_token(
-    email=os.getenv("Mediafire_Mail"),
-    password=os.getenv("Mediafire_Pass"),
-    app_id='42511')
-
-api.session = session
-response = api.user_get_info()
-fd = open(os.path.join(os.getcwd(),'Backup.zip'), 'rb')
-result = uploader.upload(fd, FileName,
-                         folder_key='fufvr27uasdbn')
-print(result)
+    api.session = session
+    response = api.user_get_info()
+    fd = open(os.path.join(os.getcwd(),'Backup.zip'), 'rb')
+    result = uploader.upload(fd, FileName,
+                            folder_key='fufvr27uasdbn')
+    print(result)
+except:
+    st.warning("Unable to Upload on Mediafire")
+else:
+    st.success("Uploaded to Mediafire")
 
 #Authentication for Scraped Data
 Auth=st.text_input("Enter Auth Code:")
