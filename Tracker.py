@@ -87,18 +87,17 @@ def Save_Details(Current_Price,Product_ID,FUrl):
             if(Already_Exist==False):
                 with open("Scraper_List.csv",'a',newline='',encoding="utf-8") as NewCsv:
                     writer = csv.writer(NewCsv,delimiter=",")
-                    writer.writerow([Product_ID,Current_Price,Target_Price,Email,FUrl])
+                    writer.writerow([Product_ID,int(Current_Price[1:].replace(',','').replace('.00','')),Target_Price,Email,FUrl])
                     st.success("New Allert is added.")
         
 #Getting Unique Product ID for Storing Its Prices over Dates
 def Get_Product_ID(FUrl):
     if ('amzn' in str(FUrl) or 'amazon' in str(FUrl)):
-        if('amzn' in str(URL)):
+        if('dp/' in str(URL)):
             return FUrl[FUrl.find("dp/")+3:FUrl.find("dp/")+13]
         else:
-            return FUrl[FUrl.find("dp/")+3:FUrl.find("dp/")+13]
+            return FUrl[FUrl[FUrl.find("gp/product/")+11:FUrl.find("gp/product/")+21]]
     elif "flipkart" in FUrl:
-        print(FUrl[FUrl.index("/itm")+1:FUrl.index("/itm")+17])
         return FUrl[FUrl.index("/itm")+1:FUrl.index("/itm")+17]
 
 
@@ -135,7 +134,10 @@ def Do_Scrape(URL):
             Product_Image=list(Product_Images.keys())[list(Product_Images.values()).index(max(Product_Images.values()))]
             Product_ID=Get_Product_ID(req.url)
             Progress.progress(100)
-            FUrl=req.url[:req.url.find('dp/')+13]
+            if 'dp/' in req.url:
+                FUrl=req.url[:req.url.find('dp/')+13]
+            else:
+                FUrl=req.url[:req.url.find("gp/product/")+21]
             Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Reviews,Off_Percentage,Product_Image,Product_ID)
             Save_Details(Current_Price,Product_ID,FUrl)
         elif "flipkart" in str(req.url):
