@@ -99,7 +99,7 @@ def Save_Details(Current_Price):
 #Scraping
 def Scraper_Fun(URL):
     scraper=random.choice(scrapers)
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.59'}
     req=scraper.get(URL,headers=headers)
     bsoup = BeautifulSoup(req.text,"html.parser")
     if req.status_code!=200:
