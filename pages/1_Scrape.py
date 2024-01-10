@@ -130,26 +130,30 @@ with open(os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Scraper_Lis
     for i in range(len(ProductsList)-1,0,-1):
         j = random.randint(0,i+1) #selecting a random item's index
         ProductsList[i],ProductsList[j] = ProductsList[j],ProductsList[i]
+    
     for Product in ProductsList:
-        Product_Details=Product
-        Product_ID,Last_Price,Target_Price,Target_Mail,URL=Product_Details[0], int(Product_Details[1]) ,int(Product_Details[2]) ,Product_Details[3],Product_Details[4]
-        Current_Price=0
-        Product_Name=''
-        Product_Image=''
-        Scraper_Fun(URL)
-        print("Comparing ",Current_Price,Target_Price,Product_ID)
-        if Current_Price <= int(Target_Price):
-            SendMails(Product_Name,Product_Image,Current_Price,Target_Mail)
-            print("Price Drop Alerted\n")
-        if Current_Price < int(Last_Price):
-            SendMails(Product_Name,Product_Image,Current_Price,Target_Mail)
-            print("Price Drop Alerted\n")
-            Product[1]=int(Current_Price)
-        ReWrite.append([Product_ID,Current_Price,Target_Price,Target_Mail,URL])
-        Save_Details(Current_Price)
-        t=random.randint(7,10)
-        print('Waiting ',t,' Seconds')
-        time.sleep(t)
+        try:
+            Product_Details=Product
+            Product_ID,Last_Price,Target_Price,Target_Mail,URL=Product_Details[0], int(Product_Details[1]) ,int(Product_Details[2]) ,Product_Details[3],Product_Details[4]
+            Current_Price=0
+            Product_Name=''
+            Product_Image=''
+            Scraper_Fun(URL)
+            print("Comparing ",Current_Price,Target_Price,Product_ID)
+            if Current_Price <= int(Target_Price):
+                SendMails(Product_Name,Product_Image,Current_Price,Target_Mail)
+                print("Price Drop Alerted\n")
+            if Current_Price < int(Last_Price):
+                SendMails(Product_Name,Product_Image,Current_Price,Target_Mail)
+                print("Price Drop Alerted\n")
+                Product[1]=int(Current_Price)
+            ReWrite.append([Product_ID,Current_Price,Target_Price,Target_Mail,URL])
+            Save_Details(Current_Price)
+            t=random.randint(7,10)
+            print('Waiting ',t,' Seconds')
+            time.sleep(t)
+        except:
+            pass
 
 #ReWriting all the Latest Data
 with open(os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Scraper_List.csv'),"w",newline="") as File_Mod:
