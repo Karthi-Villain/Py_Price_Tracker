@@ -11,7 +11,7 @@ for i in range(int(os.getenv('S_Count',default=30))):
 
 #--Mailing--
 def SendMails(Product_Name,Product_Image,Current_Price,Target_Mail):
-    with smtplib.SMTP(os.getenv('MServer',default='smtp.office365.com'),os.getenv('MPort',default='587')) as smtp:
+    with smtplib.SMTP(os.getenv('MServer',default='smtp.office365.com'),os.getenv('MPort',default='25')) as smtp:
         print('Mailing Started to '+Target_Mail)
         smtp.starttls()
         smtp.login(os.getenv('Mail'),os.getenv('MPass'))
@@ -49,26 +49,34 @@ def SendMails(Product_Name,Product_Image,Current_Price,Target_Mail):
         print(" Mail Sent To:"+Target_Mail+" - "+str(datetime.now()))
 
 #for Scraping Details From Amazon
-def Amazon_Link(bsoup):
-    global Current_Price ,Product_Name, Product_Image
-    if not None == bsoup.find('div',id="availability").text:
-        Current_Price=bsoup.find_all('span',class_="a-offscreen")[0].text
-        Current_Price=int(Current_Price[1:-3].replace(',',''))
+def Amazon_Link(bsoup,Purl):
+    if not os.getenv("Amazon",True):
+        pass
     else:
-        Current_Price=0
+        print(Purl)
+        global Current_Price ,Product_Name, Product_Image
+        if not None == bsoup.find('div',id="availability"):
+            Current_Price=bsoup.find_all('span',class_="a-offscreen")[0].text
+            Current_Price=int(Current_Price[1:-3].replace(',',''))
+        else:
+            Current_Price=0
 
-    Product_Name=bsoup.find("span",id="productTitle").text.strip()
-    Product_Images=json.loads(bsoup.find('div',id="imgTagWrapperId").img['data-a-dynamic-image'])
-    Product_Image=list(Product_Images.keys())[list(Product_Images.values()).index(max(Product_Images.values()))]
+        Product_Name=bsoup.find("span",id="productTitle").text.strip()
+        Product_Images=json.loads(bsoup.find('div',id="imgTagWrapperId").img['data-a-dynamic-image'])
+        Product_Image=list(Product_Images.keys())[list(Product_Images.values()).index(max(Product_Images.values()))]
 
 #for Scraping Details From Flipkart
-def Flipkart_Link(bsoup):
-    global Current_Price ,Product_Name, Product_Image
-    Current_Price=int(bsoup.find("div",class_="_30jeq3 _16Jk6d").text[1:].replace(',','').replace('.00',''))
-    Product_Name=bsoup.find("h1",class_="yhB1nd").text
-    if "None" == bsoup.find("div",class_="_16FRp0") or "None" == bsoup.find("div",class_="_1dVbu9"):
-        Current_Price=0
-    Product_Image=bsoup.find("img",class_="_396cs4 _2amPTt _3qGmMb").attrs["src"]
+def Flipkart_Link(bsoup,Purl):
+    if not os.getenv("Flipkart",True):
+        pass
+    else:
+        print(Purl)
+        global Current_Price ,Product_Name, Product_Image
+        Current_Price=int(bsoup.find("div",class_="_30jeq3 _16Jk6d").text[1:].replace(',','').replace('.00',''))
+        Product_Name=bsoup.find("h1",class_="yhB1nd").text
+        if None is bsoup.find("div",class_="_16FRp0") or None is bsoup.find("div",class_="_1dVbu9"):
+            Current_Price=0
+        Product_Image=bsoup.find("img",class_="_396cs4 _2amPTt _3qGmMb").attrs["src"]
 
 #For Saving Latest Prices
 def Save_Details(Current_Price):
@@ -106,16 +114,23 @@ def Scraper_Fun(URL):
         pass
     else:
         if("amazon" in req.url):
-            Amazon_Link(bsoup)
+            Amazon_Link(bsoup,req.url)
         elif "flipkart" in req.url:
-            Flipkart_Link(bsoup)
+            Flipkart_Link(bsoup,req.url)
 
 #Checking all the Products For Fluctuations
 ReWrite=[]
 with open(os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Scraper_List.csv'),"r") as SL:
     Details=csv.reader(SL)
     next(Details,None) #Skip initial Headers
+    ProductsList=[]
+    ShuffledItems=[]
     for Product in Details:
+        ProductsList.append(Product)
+    for i in range(len(ProductsList)-1,0,-1):
+        j = random.randint(0,i+1) #selecting a random item's index
+        ProductsList[i],ProductsList[j] = ProductsList[j],ProductsList[i]
+    for Product in ProductsList:
         Product_Details=Product
         Product_ID,Last_Price,Target_Price,Target_Mail,URL=Product_Details[0], int(Product_Details[1]) ,int(Product_Details[2]) ,Product_Details[3],Product_Details[4]
         Current_Price=0

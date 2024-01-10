@@ -84,11 +84,12 @@ def Save_Details(Current_Price,Product_ID,FUrl):
                     else:
                         Already_Exist=True
                     
-            if(Already_Exist==False):
-                with open("Scraper_List.csv",'a',newline='',encoding="utf-8") as NewCsv:
-                    writer = csv.writer(NewCsv,delimiter=",")
-                    writer.writerow([Product_ID,int(Current_Price[1:].replace(',','').replace('.00','')),Target_Price,Email,FUrl])
-                    st.success("New Allert is added.")
+        if(Already_Exist==False):
+            with open("Scraper_List.csv",'a',newline='',encoding="utf-8") as NewCsv:
+                writer = csv.writer(NewCsv,delimiter=",")
+                print(Product_ID,int(Current_Price[1:].replace(',','').replace('.00','')),Target_Price,Email,FUrl)
+                writer.writerow([Product_ID,int(Current_Price[1:].replace(',','').replace('.00','')),Target_Price,Email,FUrl])
+                st.success("New Allert is added.")
         
 #Getting Unique Product ID for Storing Its Prices over Dates
 def Get_Product_ID(FUrl):
@@ -141,9 +142,11 @@ def Do_Scrape(URL):
             Display_Results(Product_Name,Current_Price,Actual_Price,Delivary_Details,Reviews,Off_Percentage,Product_Image,Product_ID)
             Save_Details(Current_Price,Product_ID,FUrl)
         elif "flipkart" in str(req.url):
+           
             Progress.progress(80)
             Product_Name=bsoup.find("h1",class_="yhB1nd").text
-            if not "None" == bsoup.find("div",class_="_16FRp0") or "None" == bsoup.find("div",class_="_1dVbu9"):
+            
+            if not None == bsoup.find("div",class_="_16FRp0") or "None" == bsoup.find("div",class_="_1dVbu9"):
                 Delivary_Details=bsoup.find("div",class_="_3XINqE").text[:-4]
             else:
                 Current_Price=0
@@ -162,8 +165,10 @@ def Do_Scrape(URL):
             Save_Details(Current_Price,Product_ID,FUrl)
         else:
             st.write("Site not Supported Yet")
-    except:
+    except Exception as e:
+        print(e)
         st.warning('Try After Some Time')
+    
 
 if URL:
     Do_Scrape(URL)
