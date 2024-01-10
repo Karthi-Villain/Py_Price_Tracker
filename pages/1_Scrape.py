@@ -124,10 +124,10 @@ with open(os.path.join(os.path.split(os.path.dirname(__file__))[0], 'Scraper_Lis
         Scraper_Fun(URL)
         print("Comparing ",Current_Price,Target_Price,Product_ID)
         if Current_Price <= int(Target_Price):
-            #SendMails(Product_Name,Product_Image,Current_Price,Target_Mail)
+            SendMails(Product_Name,Product_Image,Current_Price,Target_Mail)
             print("Price Drop Alerted\n")
         if Current_Price < int(Last_Price):
-            #SendMails(Product_Name,Product_Image,Current_Price,Target_Mail)
+            SendMails(Product_Name,Product_Image,Current_Price,Target_Mail)
             print("Price Drop Alerted\n")
             Product[1]=int(Current_Price)
         ReWrite.append([Product_ID,Current_Price,Target_Price,Target_Mail,URL])
