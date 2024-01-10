@@ -11,7 +11,7 @@ for i in range(int(os.getenv('S_Count',default=30))):
 
 #--Mailing--
 def SendMails(Product_Name,Product_Image,Current_Price,Target_Mail):
-    with smtplib.SMTP(os.getenv('MServer',default='smtp.office365.com'),os.getenv('MPort',default='25')) as smtp:
+    with smtplib.SMTP(os.getenv('MServer',default='smtp.office365.com'),os.getenv('MPort',default='587')) as smtp:
         print('Mailing Started to '+Target_Mail)
         smtp.starttls()
         smtp.login(os.getenv('Mail'),os.getenv('MPass'))
